@@ -1,0 +1,5 @@
+# Dummy Schema, damit IntelliJ keinen Fehler anzeigt
+# Du kannst den Inhalt löschen und hier dein Schema reinschreiben
+type Query {
+    ping: String
+}

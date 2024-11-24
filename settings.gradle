@@ -1,0 +1,4 @@
+rootProject.name = 'workspace'
+
+include 'remote-service'
+include 'graphql-service'

@@ -1,0 +1,22 @@
+enum MediaType {
+    image,
+    video,
+    audio,
+}
+
+type MediaMetadata {
+    dimensions: String
+    duration: Int
+    codec: String
+}
+
+type Media {
+    id: ID!
+    url: String!
+    type: MediaType!
+    metadata: MediaMetadata
+}
+
+type Query {
+    media(storyId: ID!): [Media!]
+}
