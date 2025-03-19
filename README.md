@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-* You need **Java 21** at your computer
+* You need **Java 17** at your computer
 * You need an IDE (like IntelliJ)
 * Your computer needs to download and install packages using **Gradle**
 * You need to clone a **Git repository** from github.com
