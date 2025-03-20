@@ -19,8 +19,8 @@ import java.util.Map;
  * - der zeigt aber (aus guten Gründen!) keine Cache INHALTE an
  * - außerdem funktioniert meine Implementierung nur mit dem Default In-Memory-Cache
  */
-@Component
-@Endpoint(id = "excerpt-cache") // Endpoint-id muss in den application.properties enabled werden
+//@Component
+//@Endpoint(id = "excerpt-cache") // Endpoint-id muss in den application.properties enabled werden
 class ExcerptCacheEndpoint {
 
     /**
