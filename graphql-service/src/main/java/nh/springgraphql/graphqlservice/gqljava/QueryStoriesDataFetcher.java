@@ -9,8 +9,8 @@ import nh.springgraphql.graphqlservice.domain.StoryRepository;
 import java.util.List;
 
 public class QueryStoriesDataFetcher {
-  // TODO: Implementiere diesen DataFetcher:
-  //  er soll ALLE Stories aus einem StoryRepository zurückliefern
+  // TODO: Implement this DataFetcher:
+  //  it should return ALL stories from the StoryRepository
 
     private final StoryRepository storyRepository = new StoryRepository();
 }

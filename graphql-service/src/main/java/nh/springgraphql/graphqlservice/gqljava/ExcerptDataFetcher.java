@@ -5,6 +5,7 @@ import graphql.schema.DataFetchingEnvironment;
 import nh.springgraphql.graphqlservice.domain.Story;
 
 public class ExcerptDataFetcher  {
-  // TODO: Implementiere diesen Datafetcher
-  //   Der DataFetcher soll die ersten drei Zeichen des 'body'-Feldes einer Story zurückliefern
+  // TODO: Implement
+  //   This DataFetcher should return the first three characters of the 'body' field
+  //     in a Story
 }
