@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * Zeigt den INHALT unseres "Excerpt"-Caches per Actuator Endpunkt an.
+ * Displays the CONTENT of our "Excerpt" cache via an Actuator endpoint.
  * <p>
- * Das würde man in einer echten Anwendung so nicht machen:
- * - der Endpunkt ist (der einfachheithalber) nur für den "excerpt-cache" gebaut
- * - es gibt bereits einen allgemeinen Actuator-Endpunkt für den Cache in Spring Boot
- * - der zeigt aber (aus guten Gründen!) keine Cache INHALTE an
- * - außerdem funktioniert meine Implementierung nur mit dem Default In-Memory-Cache
+ * This would NOT be done in a real application:
+ * - The endpoint is (for simplicity) only built for the "excerpt-cache"
+ * - There is already a general Actuator endpoint for the cache in Spring Boot
+ * - However, the built-in endpoint does not show cache CONTENT (for good security reasons!)
+ * - Additionally, my implementation only works with the default in-memory cache
  */
 //@Component
 //@Endpoint(id = "excerpt-cache") // Endpoint-id muss in den application.properties enabled werden
