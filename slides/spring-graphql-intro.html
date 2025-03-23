@@ -1,0 +1,1778 @@
+<html lang="de">
+  <!DOCTYPE html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Spring GraphQL Workshop</title>
+
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reset.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/reveal.css" />
+    <link rel="stylesheet" href="revealjs/reveal.js/dist/theme/solarized.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="revealjs/highlight-js-github-theme.css" />
+    <link rel="stylesheet" href="revealjs/styles.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-state="title">
+          <h4 style="margin-bottom: 3rem; font-size: 3rem">
+            <span class="transparent-bg">
+              <a href="https://nilshartmann.net" target="_blank"
+                >Nils Hartmann</a
+              >
+              |
+              <a href="https://twitter.com/nilshartmann" target="_blank"
+                >@nilshartmann</a
+              >
+            </span>
+          </h4>
+          <h2 class="title" style="font-size: 7rem">
+            <b>Spring GraphQL</b>
+          </h2>
+
+          <!--          <div style="margin-top: 6rem">-->
+          <!--            <h3><span class="transparent-bg">Slides (online)</span></h3>-->
+          <!--            <p>-->
+          <!--              <a class="Link" href="https://graphql.schule/api2022">https://graphql.schule/api2022</a>-->
+          <!--            </p>-->
+          <!--          </div>-->
+          <!--          <div style="margin-top: 6rem">-->
+          <!--            <h3><span class="transparent-bg">Workspace Installation</span></h3>-->
+          <!--            <p>-->
+          <!--              <a class="Link" href="https://github.com/nilshartmann/spring-graphql-training/blob/main/INSTALL.md">https://graphql.schule/install</a>-->
+          <!--            </p>-->
+          <!--          </div>-->
+        </section>
+        <section>
+          <h2>Nils Hartmann</h2>
+          <p style="margin-top: 2rem">
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+            /
+            <a href="https://twitter.com/nilshartmann" target="_blank"
+              >@nilshartmann</a
+            >
+          </p>
+          <p style="margin-top: 2rem">
+            <em
+              >Freelance Software Developer</em
+            >
+          </p>
+          <p></p>
+          <p style="margin-top: 5rem">
+            Java | JavaScript, TypeScript | React | GraphQL
+          </p>
+          <div style="display: flex; justify-content: center; margin-top: 2rem">
+            <div style="margin-left: 15px">
+              <a href="https://graphql.schule/video-kurs"
+                ><img
+                  style="max-height: 450px"
+                  src="images/screenshot-graphql-kurs.png"
+                /><br />https://graphql.schule/video-kurs</a
+              >
+              <br />
+            </div>
+            <!--  -->
+            <div style="margin-left: 100px">
+              <a href="https://reactbuch.de"
+                ><img
+                  style="max-height: 450px"
+                  src="images/react-buch-v2.jpg"
+                /><br />https://reactbuch.de</a
+              >
+              <br />
+            </div>
+          </div>
+        </section>
+
+
+
+        <section data-markdown>
+          <textarea data-template>
+## Basics
+
+* **At any time:** Questions and discussions are welcome!
+  * There are no stupid questions!
+* We'll alternate our "workflow":
+  * I'll show you features directly in the editor — you can just **watch** (no need to code in parallel with me!)
+  * Then you'll do an exercise for each step, and I'll watch you 😉
+
+---
+## Agenda
+
+* The GraphQL query language
+* The GraphQL schema
+* The foundation: graphql-java
+* GraphQL APIs with Spring GraphQL
+  * Queries and mutations
+  * Testing
+  * Integration of external (GraphQL/REST) services
+  * API design and error handling
+  * Strategies for performance optimization
+  * Security
+---
+
+# GraphQL
+
+_"GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data"_
+([https://graphql.org](https://graphql.org))
+
+---
+
+# GraphQL
+
+_"GraphQL is a **query language for APIs** and a runtime for fulfilling those queries with your existing data"_
+([https://graphql.org](https://graphql.org))
+
+---
+<!-- .slide: data-transition="none" -->
+
+# GraphQL
+
+_"GraphQL is a query language for APIs and a **runtime for fulfilling** those queries with your existing data"_
+([https://graphql.org](https://graphql.org))
+
+---
+<!-- .slide: data-transition="none" -->
+
+# GraphQL
+
+_"GraphQL is a query language for APIs and a runtime for fulfilling those queries with **your existing data**"_
+([https://graphql.org](https://graphql.org))
+
+---
+
+## Specification
+
+* https://spec.graphql.org/
+* Covers:
+  * Query language and execution
+  * Schema Definition Language (SDL)
+* Not a finished product or library
+  * There are libraries that help you implement and expose GraphQL APIs
+  * You'll need to fetch the queried data yourself
+* Be careful to distinguish between the GraphQL **standard** and proprietary extensions
+
+---
+
+## Sample Application
+
+<img style="border: 1px solid grey" src="images/publy-screenshot.png" />
+
+[http://localhost:3000](http://localhost:3000)
+
+---
+
+## Example: GraphiQL
+
+<img style="border: 1px solid grey" src="images/screenshot-graphiql.png" />
+
+[http://localhost:8080](http://localhost:8080)
+
+---
+
+## Example: GraphQL Tooling
+
+* <!-- .element: class="demo" --> IntelliJ IDEA
+  * <!-- .element: class="demo" --> GraphQL plugin (hello.graphql)
+  * <!-- .element: class="demo" --> GraphQL.md in the publy directory
+  * <!-- .element: class="demo" --> language=GraphQL in a blank Java file
+
+---
+
+<!-- .slide: id="graphql-sprache" -->
+# The GraphQL Query Language
+---
+
+### A language to query **fields** from an **object graph**
+
+```graphql
+  query {
+    story {
+      id title writtenBy {
+        id user { name }
+      }
+    }
+  }
+
+---
+
+### Fiels can have **arguments**
+
+<pre><code class="graphql">
+  query {
+    story(storyId: 5) {
+      id title writtenBy {
+        id user { name }
+      }
+    }
+  }
+</code></pre>
+
+---
+
+### The **response** has the same structure as the query
+
+<img src="images/query-antwort.png" />
+
+---
+
+### Operation Type
+
+GraphQL executes **operations**.
+The **operation type** defines what the request is intended to do:
+
+* **query**: Read data (default operation, the keyword `query` can be omitted)
+* **mutation**: Modify data
+* **subscription**: Receive data from the server as soon as it becomes available (similar to events)
+
+---
+
+### Operation Type
+
+The operation type also determines the **entry point** into the object graph:
+
+<img src="images/einstiegspunkte.png" />
+
+---
+
+### Naming Operations
+
+* Operations can have **names**.
+* This is especially useful for debugging and code generators
+
+* <pre class="fragment"><code class="graphql">
+query NewestStory {
+    story {
+      id
+      title
+    }
+}
+</code></pre>
+
+---
+
+### Fragments
+
+* With a **Fragment** you can describe a reusable set of fields.
+* You can use a fragment multiple times in one or multiple queries
+* ```graphql
+  fragment BaseMember on Member {
+      id joined
+      user { is username }
+  }
+
+  query {
+      story {
+        writtenBy { ...BaseMember }
+
+        reactions {
+          givenBy { ...BaseMember }
+        }
+      }
+  }
+  ```
+
+---
+
+### Union types
+
+A **Union type** can return more than one type:
+
+```graphql
+  mutation  addComment
+      (input: { storyId: "1", content: "..." }) {
+
+      ...on AddCommentSuccessPayload {
+        newComment { id }
+      }
+
+      ...on AddCommentFailurePayload {
+        errorMessage
+      }
+  }
+```
+
+---
+
+## Exercise: Execute a Query
+
+_Get familiar with the GraphQL query language_
+
+* Open GraphiQL on my computer (I’ll give you the URL)
+* Try to run a query that returns the first ten stories and requests the following fields:
+  * ID, title, excerpt, publication date, who wrote the story, and the first ten comments for each story
+  * Can you extend the query to return the ten **newest** stories?
+* Create a fragment (`Author`) that selects a `Member`'s ID, as well as the `name` and `id` of the associated user
+  * Use this fragment in both the stories and the comments to query member information
+  * In the stories, also query the member's `skills`
+* You can use code completion and the `Docs` explorer (book icon in the top left corner) to explore the API
+* Suggested solution: [https://graphql.schule/queries](https://graphql.schule/queries)
+
+---
+
+### GraphQL Requests
+
+* <!-- .element: class="demo" --> HTTP request to the GraphQL API
+  * <!-- .element: class="demo" --> request.http in the `publy` folder
+  * <!-- .element: class="demo" --> Show errors
+
+---
+
+## GraphQL Requests
+
+* Typically only HTTP POST requests are used
+  * Other HTTP methods are irrelevant
+  * HTTP status is usually 200 OK, even in case of errors!
+  * A major difference compared to REST APIs
+* The JSON response object contains up to three fields:
+  * `data`: The retrieved data (structure matches the query)
+  * `errors`: A list of (technical) errors, including error messages
+  * `extensions`: Custom object for proprietary extensions (e.g. debug info)
+* In Spring, either [Spring WebMVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html) or [Spring WebFlux](https://docs.spring.io/spring-framework/reference/web/webflux.html#webflux) is used for the HTTP API
+* With the upcoming [1.4 release of Spring GraphQL](https://spring.io/blog/2025/03/18/spring-for-graphql-1-4-m1-released#aligning-with-the-graphql-over-http-specification) it will support the [GraphQL over HTTP draft specification](https://graphql.github.io/graphql-over-http/draft/)
+
+---
+
+<!-- .slide: id="graphql-apis-providing" -->
+# Providing GraphQL APIs
+
+---
+
+<!-- .slide: id="schema" -->
+### The GraphQL Schema
+
+* GraphQL APIs must be described using a schema.
+* The schema defines objects (types) with their respective fields.
+* The schema can be queried at runtime using an _introspection query_
+  * 🧑‍💻 Example in GraphiQL
+* Depending on the framework, there are different ways to define the schema:
+  * **Schema-first**: first define the schema, then implement it
+  * **Code-first**: schema is generated from (Java) code
+  * Java frameworks usually follow the schema-first approach (except MicroProfile GraphQL)
+
+---
+
+### Describing the Schema
+
+* Use the [Schema Definition Language (SDL)](https://graphql.org/learn/schema/)
+* Or use the [Java API](https://www.graphql-java.com/documentation/schema) in GraphQL-Java
+* Typically, **SDL** is used
+
+---
+
+### The SDL
+
+* <!-- .element: class="demo" --> Demo: First iteration of schema
+
+---
+
+### Object Types
+
+<pre><code class="graphql">
+  type Story {
+    id: ID!
+
+    title: String!
+    body: String!
+  }
+</code></pre>
+
+* **Fields** are described with **return types**
+* An exclamation mark (`!`) indicates that the field is **not nullable**
+  * That means that the backend guaranteed that there is always a value coming back
+
+---
+
+### Documentation and comments
+
+* Documentation is written using triple double quotes (`"""`)
+  * Markdown formatting is allowed
+* Comments start with a hash symbol (`#`)
+  * Documentation is part of the API, comments are not
+
+
+* ```graphql
+  """
+  A `Story` is the main object in our service.
+  """
+  type Story {
+    """Identifies this object"""
+    id: ID!
+
+    # todo: implement new tags-field (PROJ-666)
+  }
+  ```
+
+---
+
+## Scalar Types
+
+* Scalar types correspond to primitive types in Java
+  * They represent the leaves of the object graph
+* Standard types: `ID`, `String`, `Boolean`, `Int`, `Float`
+  * `ID` is read and written as a string, but should not be interpreted ("opaque" value)
+
+* ```graphql
+  type Member {
+    id: ID!
+
+    username: String!
+
+    # no exclamation mark: can be null
+    likes: Int
+
+    amount: Float!
+
+    activeMember: Boolean
+  }
+  ```
+
+
+* It possible to build own scalar types
+---
+
+### Enumerations (enum)
+
+* Almost as in Java
+
+* <!-- .element: style="min-width: 500px" -->
+  ```graphql
+  enum ReactionType {
+    like,
+    laugh,
+    thumbUp
+  }
+  ```
+
+---
+
+### References
+
+* Referencing other Object Types
+
+* <!-- .element: style="min-width: 900px" -->
+  ```graphql
+  type Member {
+    # ...
+  }
+
+  type Comment {
+    # ...
+  }
+
+  type Story {
+    """Reference to the Member that has written this Story"""
+    writtenBy: Member!
+
+    comments: [Comment!]!
+
+  }
+  ```
+
+---
+
+### Arguments
+
+* Fields can have **arguments**
+  * Such fields are also called _methods_
+* Fields with their names and types must be defined in the API
+  * Names are important (like "named arguments" in Kotlin), not the order (unlike in Java)
+* Arguments can have default values
+* ⚠️ Warning! Arguments must not be object types!
+
+
+* ```graphql
+  type Story {
+
+    # Mandatory argument maxLength, defaults to 20
+    #  if not specified by the client
+    excerpt(maxLength: Int! = 20): String!
+
+  }
+  ```
+
+---
+
+### Root Types
+
+* Root types are the entry point for queries into the object graph
+* Root types are **Query**, **Mutation**, and **Subscription**
+  * **Query** is required, the other two types are optional
+* Syntax and behavior are the same as for regular object types
+* Fields on root types are also called **root fields**
+
+* ```graphql
+  type Query {
+    """Returns a List of all stories"""
+    stories: [Story!]!
+
+    """Returns a story by its ID or null"""
+    story(id: ID!): Story
+  }
+
+  type Mutation {
+    addComment(storyId: ID!, memberId: ID!, content: String!): Comment!
+  }
+  ```
+
+
+---
+
+### Schema Evolution
+
+* In GraphQL, there is only _one version_ of the API (no `/api/v1`, `/api/v2`)
+* The schema can be extended at any time
+  * Clients explicitly request fields, meaning new fields do not affect them
+* Fields can be marked with `deprecated` to indicate they should no longer be used
+
+* ```graphql
+  type Query {
+    # Ausgangspunkt
+    getStoryById(id: ID!): Story
+  }
+  ```
+
+* ```graphql
+  type Query {
+    getStoryById(id: ID!): Story
+
+    # New field - does not affect existing clients
+    stories: [Story!]!
+  }
+  ```
+
+* ```graphql
+  type Query {
+    getStoryById(id: ID!): Story @deprecated("Use story instead")
+    story(id: ID!): Story
+
+    stories: [Story!]!
+  }
+  ```
+---
+### _One_ API for the Entire Application
+
+* Typically, an application has *one* GraphQL API
+  * In REST, there are multiple endpoints, may be even on different servers
+  * GraphQL is intended to be the central API
+  * Services communicate with each other internally via REST or other mechanisms
+
+---
+
+### Excercise: describing the schema
+
+* Now it's your turn!
+* I will commit my schema description and the excercise description
+* When you're done, please raise your hand in teams ✋
+
+
+---
+<!-- .slide: id="api-implementieren" -->
+## Implementing a GraphQL API
+
+---
+
+### The core: graphql-java
+<!-- .slide: id="graphql-java" -->
+
+* <img style="height:350px" src="images/java-graphql-frameworks.png" />
+* [graphql-java](https://www.graphql-java.com/) is the common base for all (?) Java-based GraphQL frameworks
+* Responsible for the actual execution of a GraphQL operation:
+  * Schema definition using SDL (or via Java API)
+  * Parsing and validating a GraphQL operation
+  * Optimized execution of `DataFetcher`s to retrieve data (e.g., parallel execution)
+  * However: it does **not** provide an HTTP endpoint, security, etc.
+* The API is low-level (`DataFetcher`)
+* Other GraphQL frameworks build on top of it and offer additional features
+
+
+---
+
+
+
+### Processing a GraphQL Query (general)
+
+1. <!-- .element: class="xx-list" --> Query is received (HTTP endpoint)
+2. Query is parsed and validated
+3. Invalid queries are rejected (`errors` field in the response)
+4. For each field, a *resolver function* (also known as *DataFetcher* or *mapping function*) is called, responsible for retrieving the data for that field
+5. Resolver results are validated (especially regarding types)
+6. The result is provided as the `data` field
+7. The result is sent back to the client
+
+<!-- .slide: class="left" -->
+* graphql-java is only responsible for steps 2–6
+* Spring GraphQL handles the rest
+
+* Our job is to implement the _resolvers_ or _data fetchers_
+
+---
+
+### DataFetcher (graphql-java)
+
+* <!-- .element: class="demo" --> Query.stories
+* <!-- .element: class="demo" --> Query.story
+* <!-- .element: class="demo" --> Story.excerpt (without arguments)
+
+---
+
+### DataFetcher (graphql-java)
+
+* Core interface in graphql-java: fetches data for _one_ field of a query
+  * For example, the field `Query.story` or `Story.title`
+  * Spring for GraphQL abstracts from this
+  * In other GraphQL frameworks also called `Resolver`
+
+* ```java
+  interface DataFetcher<T> {
+    T get(DataFetchingEnvironment environment);
+  }
+  ```
+* `T` represents the Java type that is returned by a DataFetcher implementation
+
+* Example:
+* ```java
+  class PingDataFetcher implements DataFetcher<String> {
+
+      @Override
+      public String get(DataFetchingEnvironment env)  {
+        return "Pong";
+      }
+  }
+  ```
+* or written as lambda function:
+* ```java
+  class DataFetchers {
+    public DataFetcher<String> ping = env -> "Pong";
+  }
+  ```
+---
+### DataFetchingEnvironment (graphql-java)
+
+* Each DataFetcher receives a `DataFetchingEnvironment` at runtime
+* This environment contains, among other things, the **arguments** passed to a field
+* ```java
+  class PingFetcher<String> {
+      @Override
+      public String get(DataFetchingEnvironment env)  {
+        String msg = env.getArgumentOrDefault("msg", "Pong");
+        return msg;
+      }
+  }
+  ```
+* And also the `source`-object, that returns the result of the parent DataFetcher:
+* ```java
+  class ExcerptFetcher<Sring> {
+      @Override
+      public String get(DataFetchingEnvironment env)  {
+        Story story = env.getSource();
+        return story.getBody().substring(0, 7);
+      }
+  }
+  ```
+---
+
+### RuntimeWiring
+
+* In the `RuntimeWiring`, all `DataFetcher`s are assigned to the fields in our schema
+* A `RuntimeWiringBuilder` is used to create an instance of it
+* For each type in our schema (including `Query`, `Mutation`, `Subscription`),
+  DataFetcher instances are assigned to their respective fields using this builder
+
+* ```java
+    RuntimeWiring wiring = RuntimeWiring.newRuntimeWiring()
+      .type("Query", builder -> {
+        return builder
+          .dataFetcher("stories", new QueryStoriesDataFetcher())
+          .dataFetcher("story", new StoryByIdDataFetcher());
+      })
+      .type("Story", builder -> {
+        return builder.dataFetcher("excerpt", new ExcerptDataFetcher());
+      })
+      .build();
+  ```
+
+---
+
+
+## GraphQL Java Architecture
+
+
+<img src="images/graphql-java-architektur.png" />
+
+---
+### Excercise: Hello, GraphQL-Java!
+
+* Implement some DataFetchers using graphql-java!
+* I will share my code and excercise description on my branch on GitHub
+
+---
+
+<!-- .slide: id="spring-for-graphql" -->
+## Spring for GraphQL
+
+
+* [Spring for GraphQL](https://spring.io/projects/spring-graphql) provides an abstraction over GraphQL-Java
+* New projects can be created using the [Spring Initializr](https://start.spring.io/)
+* The DGS framework is now also based on Spring GraphQL
+
+* Features:
+  * Automatic configuration of the RuntimeWiring
+  * HTTP endpoint for requests and subscriptions provided automatically
+  * GraphiQL integration via configuration property
+  * Familiar Spring programming model using annotations, etc.
+  * Integration with the Spring stack (e.g., Bean Validation, Security)
+  * Actuator endpoints for Spring Boot
+
+---
+
+### Schema in Spring for GraphQL
+
+* The schema is defined in files with the `.graphqls` extension
+  * Directory: `src/main/resources/graphql`
+* Spring Boot collects all schema files and generates a schema from them
+* Types can be extended
+
+
+* <pre class="fragment"><code class="graphql">
+  # story.graphqls
+  extend type Query {
+    story(id: ID!): Story
+  }
+
+  # comment.graphqls
+  extend type Query {
+    comment(id: ID): Comment
+  }
+</code></pre>
+---
+
+## Spring for GraphQL
+
+* <!-- .element: class="demo" --> Query.stories
+* <!-- .element: class="demo" --> Query.story
+* <!-- .element: class="demo" --> Story.excerpt (with maxLength argument)
+
+---
+
+## Handler functions
+
+
+* Instead of "low-level" `DataFetcher` we implement *Handler functions* on `@Controller` classes:
+
+  * ```java
+    @Controller
+    public GraphQLController {
+
+      @QueryMapping
+      public String ping() { return "Pong!" }
+
+    }
+    ```
+
+* Handler functions for fields on the Query type are annotated with `@QueryMapping`
+  * For mutations: use `@MutationMapping`, for subscriptions: `@SubscriptionMapping`
+* The method name must match the name of the field on the corresponding root type (or set it explicitly using the `value` attribute)
+
+
+---
+
+### Parameters of handler functions
+
+* Use `@Argument` to get a single attribute
+* ```graphql
+  type Query {
+    ping(msg: String): String!
+  }
+  ```
+* ```java
+  @QueryMapping
+  public String ping(@Argument String msg) {
+    return "Hello " + msg;
+  }
+  ```
+* Use `@Arguments`, to get multiple arguments in a single java class
+* ```graphql
+  type Query {
+    greet(name: String, msg: String): String!
+  }
+  ```
+
+* ```java
+    class GreetingParams { private String name; private String msg; /* getter+setter... */ }
+
+    @QueryMapping
+    public String greet(@Arguments GreetingParams params) {
+      return "Hello " + params.getName();
+    }
+  ```
+* `@ProjectedPayload` to get multiple arguments using a Java interface
+* ```graphql
+    type Query {
+      greet(name: String, msg: String): String!
+    }
+  ```
+
+* ```java
+    @ProjectedPayload
+    interface GreetingParams { String getName(); String getMsg(); }
+
+    @QueryMapping
+    public String greet(@Argument GreetingParams params) {
+      return "Hello " + params.getName();
+    }
+  ```
+
+
+---
+
+### Handler Functions on Object Types
+
+* Fields defined on a Java object that are returned by a handler function
+  are automatically resolved via reflection by Spring GraphQL.
+  * Requirement: The name of the Java field/getter method must match the name in the GraphQL schema.
+  * Example: `body` and `writtenBy` fields on the `Story` entity.
+* If there is no corresponding field on the Java object, or it behaves differently than expected by the GraphQL API, we need to implement handler functions for those fields.
+* (Fields that exist in Java objects but are not in the GraphQL API can never be queried by the client.)
+
+---
+
+### SchemaMapping
+
+* The function must be annotated with `@SchemaMapping`
+  * The name must match the name of the field in the API
+  * The parameter defines the `source` object on which the field should be resolved
+  * The source object comes from a previous DataFetcher
+
+* ```java
+  @Controller
+  class GraphQLController {
+    @SchemaMapping
+    public String excerpt(Story source, @Argument int maxLength) {
+      return source.getBody().substring(0, maxLength);
+    }
+  }
+  ```
+
+* If your method argument in Java have another name as the type name in the GraphQL schema, you can use
+  the `typename` attribute to explicitly set the name of the GraphQL type name:
+
+* ```java
+  @SchemaMapping(typeName="Story")
+  public String excerpt(StoryDto source) {
+    // ...
+  }
+  ```
+
+* `@QueryMapping`, `@SubscriptionMapping` and `@MutationMapping` are aliases for:
+  * `@SchemaMapping(typeName="Query")`
+  * `@SchemaMapping(typeName="Mutation")`
+  * `@SchemaMapping(typeName="Subscription")`
+
+
+---
+
+## Excercise: handler functions
+
+* Please start our `graphql_service` application now (see `README.md`)
+* I will commit and push my code along with the excercise description
+
+---
+## Mutations
+
+* Mutations work technically the same as queries
+* Semantically, a mutation means that data may be changed/added/deleted when the operation is called
+
+---
+### Mutations
+
+* Demo: InputType `CreateCommentInput`
+* Demo: Mutation `createComment: Comment!`
+* Demo: MutationController
+
+---
+
+### Input Types
+
+* Object types (`type Story`) **cannot** be passed as arguments to a field
+* Only scalar types, enums, and input types can be passed as arguments to fields
+* An **input type** is defined using `input`, and otherwise looks like an object type
+  * An input type must not reference object types
+
+* ```graphql
+  input CreateCommentInput {
+    storyId: ID!
+    text: String!
+    rating: Int!
+  }
+
+  type Mutation {
+    createComment(input: CreateCommentInput!): Comment!
+  }
+  ```
+
+---
+### Input types in handler functions
+
+* You can create POJOs for input types:
+* ```graphql
+  input GreetingInput { name: String, msg: String }
+
+  type Query {
+    greet(input: GreetingInput!): String!
+  }
+  ```
+* ```java
+  class GreetingInput { private String name; private String msg; /* all-args-constructor... */ }
+
+  // ...or as Java 17 record:
+  record GreetingInput(String name, String msg) {}
+
+  @QueryMapping
+  public String greet(@Argument GreetingInput input) {
+    return "Hello " + input.getName();
+  }
+  ```
+* You can use Java Bean Validation to validate the input values
+* ```java
+  class GreetingInput { @Size(min=5) private String name; private String msg; /* getter+setter... */ }
+
+  @QueryMapping
+  public String greet(@Valid @Argument GreetingInput input) {
+    return "Hello " + input.getName();
+  }
+  ```
+---
+
+### Variables
+
+* Operations (queries, mutations) can have **variables**.
+* Variables must be declared in the operation
+* Values for variables are sent to the server in a separate JSON object
+
+* ```graphql
+  query GetStory ($storyId: ID!) {
+    story(id: $storyId) {
+      id
+      title body
+    }
+  }
+  ```
+---
+### Excercise: Mutation
+
+* I will commit and push my code along with the excercise description
+
+---
+# Testing GraphQL APIs
+
+---
+
+### Test
+
+* For testing your application, there is an `@GraphQLTest`.
+* This sets up, among other things, controller classes and RuntimeWirings (i.e., GraphQL infrastructure)
+* In this test, a `GraphQlTester` can be used to execute GraphQL queries
+* The result of the query can then be validated
+  * JSON Path expressions can be used to access parts of the result
+  * The parts can be converted into different formats
+
+* ```java fragment
+
+  @GraphQlTest
+  public class PublyGraphQLControllerTest {
+
+    // omitted: setting up mocks, for example for Repositories (using @MockitoBean)
+
+    @Autowired
+    GraphQlTester graphQlTester;
+
+    private final String query = "query { ping }";
+
+    @Test
+    void pingReturnsPong() {
+      // Run a query
+      GraphQlTester.Response response = graphQlTester.document(query)
+        .execute();
+
+      // Validate result
+      response
+        .path("ping").entity(String.class).isEqualTo("pong");
+
+    }
+  ```
+
+---
+
+### GraphQlTester
+
+* You can specify the graphql query either as a string (as seen before)
+* or you can save it to a file (`xyz.graphql`), that has to be in the runtime (test) classpath
+
+* ```java
+  @Test
+  void pingReturnsPong() {
+
+    graphQlTester.document("query { ping } "); // ...
+
+    // expected to have a file "ping-test-query.graphql" in the classpath
+    graphQlTester.documentName("ping-test-query");
+  }
+
+  ```
+
+---
+
+### The WebGraphQlTester
+
+* With `WebGraphQlTester`, GraphQL requests can be executed over HTTP
+* When is this useful?
+* For this, a `@SpringBootTest` can be written
+* The test class must also be annotated with `@AutoConfigureHttpGraphQlTester`
+* The API is otherwise the same as `GraphQlTester`
+
+* ```java
+  @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+  @AutoConfigureHttpGraphQlTester
+  public class PublyGraphQLControllerWebTest {
+    @Autowired
+    private WebGraphQlTester webGraphQlTester;
+
+    @Test
+    void pingReturnsPong() {
+      // Execute the query
+      webGraphQlTester.document("query { ping }")
+        .execute()
+        .validate(/* ... */);
+    }
+  }
+  ```
+
+---
+
+### WebGraphQlTester
+
+* The injected `WebGraphQlTester` instance is already configured
+* You can customize it per request, for example to set HTTP headers
+* To do so create a modifiable copy of the instance with `mutate()`
+
+* ```java
+  graphQlTester
+      .mutate() //creates a new instance that can be configured
+      .header("Authorization", "Bearer user-mock-token")
+      .build()
+      .document(query) /* use configured instance... */
+  ```
+
+---
+
+### Excercise: Testing our application
+
+* I will commit and push my code along with the excercise description to GitHub
+
+---
+## Integrating external data services
+---
+## GraphQL Client
+
+* Spring GraphQL provides a `GraphQlClient`
+* This ensures that HTTP requests to an external GraphQL API are made in the correct format
+* ...and also handles the processing of the response
+
+---
+### GraphQL Client
+
+* **Demo**
+  * "Media GraphQL Service"
+  * Extend schema
+  * Use `HttpSyncGraphQlClient` in `MediaController`
+  * DGS Code Generator
+  * `DgsGraphQlClient` as an alternative in `MediaController`
+    * With `.request` and the generated `MediaGraphQlQuery` class and `projection` `MediaProjectionRoot`
+  * Optimization using `DataFetchingFieldSelectionSet`
+
+---
+### GraphQL Client
+
+* You'll find more about the GraphQL client in the task description of the following exercise.
+
+---
+
+### Optimizing the Query
+
+* What kind of issue might arise here?
+
+* ```graphql
+  query {
+
+    story(storyId: "1") {
+
+      media {
+            id title url
+      }
+  }}
+  ```
+* Here, we are only requesting a subset of the `Media` data from the remote GraphQL service
+  * For example, `MediaMetadata` is not needed in this query
+* However, our request to the remote service still fetches _all_ fields of the `Media` type
+* It would be better (possibly) to only query the fields from the remote service that we actually need to answer _our_ query
+
+---
+### DataFetchingFieldSelectionSet
+
+* The `DataFetchingFieldSelectionSet` from `graphql-java` contains a list of all fields that are queried below the field of a handler function in the current query
+* You can inject the `DataFetchingFieldSelectionSet` into your handler functions
+* With `contains`, you can check (via pattern) whether specific fields are included in the query
+* This allows further optimization of query processing, for example by generating optimized
+  GraphQL, REST, or SQL queries
+
+* ```java
+  @SchemaMapping
+  Media media(Story story, DataFetchingFieldSelectionSet selectionSet) {
+
+    if (s.contains("metadata/**") ) {
+      // include 'metadata' in an SQL/GraphQL/REST/... query
+      return ...;
+    }
+
+    // Query only media fields
+    return ...;
+  }
+  ```
+
+
+
+---
+### Excercise: Spring GraphQL Client
+
+* I will commit my code and excercise and push to my branch on GitHub
+
+---
+### Integrating a REST API
+
+* To consume HTTP/REST APIs, Spring provides the `RestClient`
+  * Older variant: `RestTemplate`
+* For reactive access, there's the `WebClient`
+* You can of course use these (and other) clients in Spring GraphQL to expose data from external services via your API
+
+---
+### Demo: RestClient
+
+* Show the "Publisher Remote Service" API
+* Demo: Show the PublisherServiceClient
+* Demo: Extend Story schema to include publisher
+* Demo: Schema mapping for `Story.publisher`
+* Demo: How do we handle the response?
+* Demo: Record to encapsulate the map
+* Discussion: what are the options? DTO? Resolver/mapping functions?
+* Demo: Test for the `Story.publisher` field
+
+---
+### Exercise: Integrating a REST API
+
+* Exercise: `55_rest_client.md`
+
+---
+# Schema Optimizations
+
+---
+## Lists with GraphQL
+
+* Is our `Query.stories` list ideal?
+* Typical requirements: Sorting, Filtering, Pagination
+* How could we implement that? 🤔
+* Optional demo: Filtering stories by title
+
+---
+### API Design
+
+* When designing your API, remember that you can extend it
+  * You only have _one_ version
+* For example, don’t return lists directly—wrap them in an object instead:
+* ```graphql
+  type StoryList {
+    stories: [Stories!]!
+
+    # You can later add more fields here
+  }
+
+  type Query {
+    stories: StoryList!
+  }
+
+* ```graphql
+  type Mutation {
+    createComment(input: CommentInput!): Comment!
+  }
+  ```
+---
+### A (better) Mutation for adding comments
+<!-- .slide: class="left" -->
+* Mutation
+* ```graphql
+  input AddCommentInput {
+      storyId: ID!
+      memberId: ID!
+      content: String!
+  }
+
+  type AddCommentPayload {
+    newComment: Comment!
+  }
+
+  type Mutation {
+    addComment(input: AddCommentInput!): AddCommentPayload!
+  }
+  ```
+---
+
+### Explicit return values
+
+* Using an own **return** type, we can return more informations to the client:
+  * ```graphql
+    type AddCommentPayload {
+      newComment: Comment
+      errorMessage: String
+    }
+
+    type Mutation {
+      addComment: AddCommentPayload!
+    }
+    ```
+* This object can be extended at any time without requiring changes on the client side.
+
+---
+### Union Types
+
+* Union types represent a set of other types.
+* A field can return a value of any type in that set ("A _or_ B _or_ C").
+* This is useful, for example, to model success and error responses in a mutation using separate types.
+* ```graphql
+  type AddCommentSuccess { newComment: Comment! }
+  type AddCommentError { msg: String! }
+
+  union AddCommentPayload = AddCommentSuccess | AddCommentError
+
+  type Mutation {
+    addComment(input: AddCommentInput!): AddCommentPayload!
+  }
+  ```
+---
+### Union Types
+
+* The server returns the one _or_ the other type depending on the outcome of the mutation
+* Using `...on` we can query fields depending on the returned type (somehow comparable to `instanceof` check in Java)
+
+  * ```graphql
+    mutation {
+      addComment(input: {storyId: 1, text: "Toll", rating: 4}) {
+
+        ... on AddCommentSuccess {
+          newComment { id text }
+        }
+
+        ... on AddCommentError { msg }
+      }
+    }
+    ```
+  * Attention! Changing the return type from a "simple" object type to a union type is not backward compatible
+---
+### Error handling: The `errors` field
+
+* Demo: `createMutation` with non existing story
+* Demo: GraphQlExceptionHandler to customize errors-field (MutationController)
+
+---
+### Error handling: The `errors` field
+
+* Unhandled errors in a handler functions are returns as `errors` in the graphql response:
+* ```json
+  {
+    "errors": [
+      {
+        "message": "addComment.input.content: Size must between 5 and 2147483647",
+        "locations": [
+          {
+            "line": 2,
+            "column": 3
+          }
+        ],
+        "path": [
+          "addComment"
+        ],
+        "extensions": {
+          "classification": "INTERNAL_ERROR"
+        }
+      }
+    ]
+  }
+  ```
+* ```json
+  {
+    "errors": [
+      {
+        "message": "Unauthorized",
+        "locations": [
+          {
+            "line": 2,
+            "column": 3
+          }
+        ],
+        "path": [
+          "addComment"
+        ],
+        "extensions": {
+          "classification": "UNAUTHORIZED"
+        }
+      }
+    ]
+  }
+  ```
+
+---
+
+### Error Handling
+
+* The `errors` object is only partially standardized:
+  * `message`: Error message
+  * `locations`: Where in the query the error occurred (if available)
+  * `path`: Path to the field that caused the error (if available)
+  * `extensions`: Proprietary extensions (`classification` is added by Spring for GraphQL)
+  * None of these fields are part of the GraphQL schema!
+* Use the `errors` object only for **request-level errors**, when the query cannot be executed properly at all.
+* Prefer returning domain-specific error objects instead:
+  * Especially useful for mutations, where errors are more likely
+  * Also worth considering for other fields to keep the API backward-compatible
+
+---
+### Customizing Errors
+
+* The `errors` field can be customized using a `GraphQLError` object.
+* You can register a `GraphQlExceptionHandler` in your `@Controller` class or in a [`@ControllerAdvice`](https://docs.spring.io/spring-framework/reference/web/webflux/controller/ann-advice.html) class.
+* Spring GraphQL will call this method when an exception is thrown in one of your mapping methods.
+* In the method signature, you can specify the exception type you want to handle.
+* You can also access the `DataFetchingEnvironment`, which corresponds to the environment of the mapping method where the exception occurred.
+* The method must return a `GraphQLError` object, which you can create using a builder.
+
+* ```java
+    // Handles ResourceNotFoundException instances
+    @GraphQlExceptionHandler
+    GraphQLError handleResourceNotFoundException(ResourceNotFoundException rex, DataFetchingEnvironment env) {
+        return GraphQLError.newError()
+            .errorType(ErrorType.DataFetchingException)
+            .message(rex.getMessage())
+            .location(env.getField().getSourceLocation())
+            .build();
+    }
+  ```
+---
+### Excercise: Handling errors
+
+* I will commit and push my code including the excercise description
+
+---
+```markdown
+### (Custom) Scalar Types
+
+* Demo: Introduce extended scalars
+* Demo: Register `ExtendedScalars.DateTime` using `RuntimeWiringConfigurer` in `GraphQLConfig`
+  * Set `Story.date` field to use `DateTime`
+* Demo: What happens to our tests?
+
+---
+### (Custom) Scalar Types
+
+* Scalar types are the leaf nodes of a GraphQL query (the end of the graph)
+* There are built-in [scalar types](https://graphql.org/learn/schema/#scalar-types):
+  * `Int`, `Float`, `String`, `Boolean`, `ID`
+* You can also define your own custom scalar types
+  * In graphql-java, you need to implement the [`Coercing` interface](https://graphql.org/learn/schema/#scalar-types)
+* The graphql-java project provides a set of useful pre-defined scalars:
+  * [graphql-java-extended-scalars](https://github.com/graphql-java/graphql-java-extended-scalars)
+  * You just need to declare the required scalars in your schema and register them in Spring GraphQL
+
+---
+### Interfaces
+
+* Some GraphQL APIs offer a generic way (e.g. via a common field) to fetch any object by its ID
+* This is especially useful for clients that want to update specific entries in their cache
+```
+* ```graphql
+  query {
+    node(id: "...") {
+      # ...
+    }
+  }
+  ```
+* To support this, the return type (e.g. for the `node` field) must also be generic.
+* This can be achieved using interfaces.
+
+---
+## Interfaces
+
+* **Demo**
+  * `Node` interface with an `id` field implemented by `Story`, `Comment`, and `Publisher`
+  * Schema mapping for `Node` (`typeName="Node"`)
+  * New field: `Query.node(id: ID!)`
+  * `NodeId` helper class
+  * Register `NodeIdConverter` for `NodeId`
+    * Add it as a `@Bean` in `GraphQLConfig`
+
+---
+### Interfaces
+
+* An interface enforces common fields across types that implement it (similar to methods in a Java interface)
+* Example: `id` field defined on the `Node` interface
+* You can use `on` for a type-cast like syntax (similar to Union Types)
+
+
+* ```graphql
+  query {
+      node(id: "...") {
+
+        id
+
+        ...on Story { title body }
+        ...on Comment { text }
+      }
+  }
+  ```
+---
+### Excercise: Interfaces
+
+* I will commit and push my code including the description of the excercise
+
+---
+## Performance optimizations
+
+---
+
+### Execution of DataFetcher or Mapping Methods
+
+* Demo: What happens if the `Story.publisher` mapper is slow?
+* Demo: Using `Callable`
+* Demo: Using virtual threads
+
+---
+### Asynchronous Handler Functions
+
+* Handler methods can return a `Callable`, `CompletableFuture`, `Mono`, or `Flux`
+* These methods will then be executed in parallel
+* The underlying thread pool can be configured in Spring
+* If you enable virtual threads in Spring, (almost) all handler methods will be executed in parallel *automatically*
+  * `spring.threads.virtual.enabled=true`
+  * Note: virtual threads are only available in JDK21+
+
+---
+## Batch Mapping
+
+---
+### A Simple Query...
+
+
+* 🤔 What happens when we execute the following query:
+* ```graphql
+  query {
+    stories {
+      publisher { id name }
+    }
+  }
+  ```
+* We are making a lot of individual calls to the external "Publisher Service" 😨
+* We’re even calling the "Publisher Service" multiple times for the **same** `publisherId` 😱 😱
+
+---
+
+### Problem
+
+<img src="images/dataloader-01.png" />
+
+---
+
+### DataLoader
+
+* A `DataLoader` *defers* data loading
+
+* <img src="images/dataloader-02.png" />
+
+---
+
+### DataLoader
+
+* A `DataLoader` *defers* loading of data
+* Inside a DataFetcher or handler function, you pass an ID (or similar) to the DataLoader
+* The DataLoader collects all requested IDs
+* Once collection is complete, it invokes your DataLoader function
+* That function receives all IDs and can execute an optimized call
+  * For example, using a single SQL statement with `WHERE ID IN (...)`
+* DataLoaders are a general GraphQL concept
+  * Not part of the official spec, but a de-facto standard
+* The Java implementation comes from the [java-dataloader](https://github.com/graphql-java/java-dataloader) project
+  * Like with `graphql-java`, Spring for GraphQL provides an abstraction over it
+
+---
+
+### Using a DataLoader
+
+* You can inject a DataLoader into your handler functions
+* It’s an interface with two type parameters:
+  * `Key`: the type of the key you pass when calling the DataLoader
+  * `Value`: the Java type of the result returned by the DataLoader
+* Your handler method *must* then return a `CompletableFuture`
+
+* ```java
+  public CompletableFuture<Publisher> publisher(Story member, DataLoader<String, Publisher> publisherLoader) {
+    String publisherId = story.getPublisherId();
+
+    return publisherLoader.load(publisherId); // Defer executing the actual request to remote service
+  }
+  ```
+
+---
+
+### Implementing and Registering a DataLoader
+
+* There are multiple ways to implement a DataLoader
+* Spring provides a helper via the `BatchLoaderRegistry`
+* The `BatchLoaderRegistry` is available as a Spring Bean
+* Use `forTypePair` to register a `BatchLoader` for a key-value pair
+* The method expects a callback function:
+  * It receives two parameters:
+    * A list of keys
+    * A `BatchLoaderEnvironment` instance
+  * It returns a [Flux instance](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html) containing the loaded objects
+* ```java
+  public StoryController(/* ... */, BatchLoaderRegistry registry) {
+
+    registry.forTypePair(String.class, Publisher.class).registerBatchLoader(
+
+      (List<String> keys, BatchLoaderEnvironment env) -> {
+        // execute DB or REST call here
+        // assuming findPublishers returns a Flux<User> object
+        return publisherServiceClient.findPublishers(keys);
+      }
+    );
+
+  }
+  ```
+### No Duplicate Keys
+
+* Each key is only added to the list once, so you won’t receive duplicate keys.
+  * Even if you can’t fetch all objects in a single request, duplicate loading is still avoided.
+* **Important!** The result must be returned **in the same order** as the keys were passed.
+  * If an object cannot be found for a given key, you must return `null` at that position.
+
+---
+
+### MappedBatchLoader
+
+* A regular `BatchLoader` returns a **list** of values.
+* These must be returned in **the same order** and **same length** as the keys.
+* Alternatively, you can use a `MappedBatchLoader`, which returns a [Mono](https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html) containing a **Map**.
+* The map holds key-value pairs, with one result object per key.
+  * If an object is not found, it is simply not included in the map.
+* ```java
+  public StoryController(/*... */, BatchLoaderRegistry registry) {
+
+    registry.forTypePair(String.class, Publisher.class).registerMappedBatchLoader(
+
+      (List<String> keys, BatchLoaderEnvironment env) -> {
+        // return: Mono<Map<String, Publisher>>
+      }
+
+    );
+  }
+  ```
+
+
+---
+
+### BatchMapping
+
+* In simple cases, a `MappedBatchLoader` can be implemented using a **@BatchMapping** function.
+* This is a handler function that automatically receives a list of objects (e.g., a list of `Member` objects).
+* The function then returns either:
+  * a `Map` directly, or
+  * a `Mono` containing a `Map`.
+
+* ⚠️ **Important:** Ensure that the objects used as keys in the map have correctly implemented `equals` and `hashCode` methods!
+* ```java
+    @BatchMapping
+    public Map<Story, Publisher> user(List<Story> stories) {
+      // for each publisherId's in all stories:
+      //  load each publisher and return them in a list
+      // ...
+    }
+
+
+    // BatchLoaderRegistry and SchemaMapping not neccessary anymore
+  }
+  ```
+---
+### Excercise: Optimize our API's performance
+
+* I will commit and push my code including the excercise description
+
+---
+## Exkurs: Caching in Spring Boot
+
+* Spring Boot provides a caching abstraction
+* This abstraction allows you to cache the results of method calls
+* Multiple cache providers can be used under the hood
+
+---
+
+### Caching in Spring Boot
+
+* **Demo:**
+  * Slow down the `excerpt` field (now it's AI-generated 😈)
+  * Use `@Cacheable` and enable caching with `@EnableCaching`
+  * Explore the Actuator endpoint for caches
+  * Customize cache keys using Spring Expression Language (SpEL)
+
+---
+
+## Security
+
+* Spring applications typically use **Spring Security**
+* GraphQL applications are no exception — security concerns still apply
+
+---
+
+### Security
+
+* **Demo:**
+  * Show and discuss the Spring Security configuration
+  * `me` endpoint accessing values from the `Authentication` object
+  * Use `@RolesAllowed("USER")` for `createComment` mutation
+  * Draft stories should only be visible to Admins:
+    * Use `@PostAuthorize` on `Query.story`
+    * Use `@PostFilter` on `Query.stories`
+  * Revisit: which fields should be nullable considering these restrictions?
+
+---
+
+### Security
+
+* 🤔 Consider: where do we secure the GraphQL API?
+  * Protect the `/graphql` endpoint with HTTP security
+  * Use `@PreAuthorize` to secure individual handler functions
+  * Use `@PreAuthorize` on domain/service layer methods as an alternative or in addition
+
+---
+
+### Handler Functions with Security
+
+* Use `@AuthenticationPrincipal` to access the current authenticated user (Principal) directly in handler methods
+
+* ```java
+  @MutationMapping
+  @PreAuthorize("hasRole('USER')")
+  public AddCommentPayload addComment(@Argument AddCommentInput input, @AuthenticationPrincipal User user) {
+
+    // Example: for creating a new Comment, we need the id of the current User
+    Comment newComment = storyRepository.addComment(
+      user.getId();
+      input.getStoryId(),
+      memberId,
+      input.getContent()
+    );
+
+    return ...;
+  }
+  ```
+
+---
+## Directives
+
+* Directives are comparable to annotations in Java
+* They can be used to add cross-cutting logic to your API
+* There are **Query Directives** and **Schema Directives**
+  * Query Directives are used when executing a query, e.g., `@include`, `@skip`
+  * Schema Directives refer to type definitions in the schema
+
+---
+### Query Directives
+
+* **Demo:**
+  - `hello` directive with `msg` for any field. Display `msg` in the resolver
+
+---
+### Schema Directives
+
+* **Demo:**
+  * `directive @auth(role: String!) on FIELD_DEFINITION`
+  * `AuthorizationDirectiveWiring.onField`
+
+---
+### Restricting Query Complexity
+
+* Very complex queries can overload our server
+* This can also be exploited for attacks
+* There are various strategies to restrict the allowed complexity of a query
+
+---
+### Limiting Query Depth
+
+* **Demo:**
+  * Extend schema: `Comment` -> `Story`
+  * What can we now do with a query? 😱
+  * `MaxQueryDepthInstrumentation`
+
+---
+### Restricting Query Complexity
+
+* **Demo:**
+  * `MaxQueryComplexityInstrumentation` with complexity 10
+  * `FieldComplexityCalculator`
+  * Schema directive `@complexity(complexity: Int! = 1) on FIELD_DEFINITION`
+
+             </textarea
+          >
+        </section>
+
+        <section>
+          <h2>That's it! 😊</h2>
+          <h3>Thanks a lot for your participation!</h3>
+          <h3>I wish you all the best with your GraphQL app!</h3>
+          <p>If you have any question, feel free to reach me at:</p>
+          <p>
+            <a href="mailto:nils@nilshartmann.net">nils@nilshartmann.net</a>
+          </p>
+          <p>
+            <a href="https://nilshartmann.net" target="_blank"
+              >https://nilshartmann.net</a
+            >
+          </p>
+          <p>
+            <a
+              href="https://www.linkedin.com/in/nils-hartmann-2a5738252/"
+              target="_blank"
+              >LinkedIn</a
+            >
+          </p>
+
+          <p>
+            Bluesky:
+            <a href="https://bsky.app/profile/nilshartmann.net" target="_blank"
+              >@nilshartmann.net</a
+            >
+          </p>
+        </section>
+      </div>
+    </div>
+    <script src="revealjs/reveal.js/dist/reveal.js"></script>
+    <script src="revealjs/reveal.js/plugin/notes/notes.js"></script>
+    <script src="revealjs/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="revealjs/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="revealjs/config.js"></script>
+  </body>
+</html>
