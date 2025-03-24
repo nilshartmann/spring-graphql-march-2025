@@ -22,7 +22,7 @@ type Story {
     id: ID!
     title: String!
     body: String!
-    excerpt: String!
+    excerpt(maxLength: Int! = 10): String!
 
     "Returns the PublicationState"
     state: PublicationState!
