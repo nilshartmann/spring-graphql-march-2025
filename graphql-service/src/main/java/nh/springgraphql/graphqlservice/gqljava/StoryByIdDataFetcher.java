@@ -5,12 +5,14 @@ import graphql.schema.DataFetchingEnvironment;
 import nh.springgraphql.graphqlservice.domain.Story;
 import nh.springgraphql.graphqlservice.domain.StoryRepository;
 
-public class StoryByIdDataFetcher {
+import java.util.Optional;
 
-    // TODO:
-    //  Implement this DataFetcher
-    //   - It should return a single Story based on its ID (speficied as 'storyId' argument)
-    //     from the "StoryRepository" (or null if there is no such story)
-
+public class StoryByIdDataFetcher implements DataFetcher<Optional<Story>> {
     private final StoryRepository storyRepository = new StoryRepository();
+
+    @Override
+    public Optional<Story> get(DataFetchingEnvironment environment) throws Exception {
+        String storyId = environment.getArgument("storyId");
+        return storyRepository.findStory(storyId);
+    }
 }

@@ -32,22 +32,16 @@ public class GraphQLProvider {
         InputStream schemaStream = getClass().getResourceAsStream("/graphql/schema.graphqls");
         TypeDefinitionRegistry typeDefinitionRegistry = schemaParser.parse(schemaStream);
 
-        // TODO:
-        //  1. Implementiere die DataFetcher:
-        //      - QueryStoriesDataFetcher (für Query.stories)
-        //      - StoryByIdDataFetcher (für Query.story)
-        //      - ExcerptDataFetcher( für Story.excerpt)
-        // TODO:
-        //  2. Registriere die DataFetcher hier am RuntimeWiring
 
         RuntimeWiring wiring = RuntimeWiring.newRuntimeWiring()
             .type("Query", builder -> {
                 // todo: DataFetcher registrieren
-                return builder;
+                return builder
+                    .dataFetcher("stories", new QueryStoriesDataFetcher())
+                    .dataFetcher("story", new StoryByIdDataFetcher());
             })
             .type("Story", builder -> {
-                    // todo: DataFetcher registrieren
-                    return builder;
+                    return builder.dataFetcher("excerpt", new ExcerptDataFetcher());
                 }
             )
             .build();
@@ -56,7 +50,6 @@ public class GraphQLProvider {
         GraphQLSchema graphQLSchema = schemaGenerator.makeExecutableSchema(typeDefinitionRegistry, wiring);
 
         GraphQL graphql = GraphQL.newGraphQL(graphQLSchema).build();
-
         return graphql;
     }
 
