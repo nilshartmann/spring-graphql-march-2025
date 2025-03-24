@@ -45,4 +45,15 @@ type Query {
     story(storyId: ID!): Story
 }
 
+input CreateCommentInput {
+    storyId: ID!
+    text: String!
+    rating: Int!
+}
+
+type Mutation {
+#    createComment(storyId: ID!, text: String!, rating: Int!): Comment!
+    createComment(input: CreateCommentInput!): Comment!
+}
+
 
