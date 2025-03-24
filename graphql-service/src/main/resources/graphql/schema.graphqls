@@ -1,5 +1,48 @@
-# Dummy Schema, damit IntelliJ keinen Fehler anzeigt
-# Du kannst den Inhalt löschen und hier dein Schema reinschreiben
-type Query {
-    ping: String
+enum PublicationState {
+    draft,
+    in_review,
+    published
 }
+
+# Scalar datatypes
+# ID, String, Int, Boolean, enum, Float
+
+type Comment {
+    id: ID!
+    text: String!
+
+    rating: Int!
+}
+
+"""
+A `Story` domain object most **important** object in our application.
+
+"""
+type Story {
+    id: ID!
+    title: String!
+    body: String!
+    excerpt: String!
+
+    "Returns the PublicationState"
+    state: PublicationState!
+
+    """ This field returns always a list of _Comment_ objects
+
+    - It never returns null
+    - The list only contains comment objects, but no null values
+    - The list might be empty
+    """
+    comments: [Comment!]!
+}
+
+# Root Type
+#   fields: Root Fields
+type Query {
+    stories: [Story!]!
+
+    "Returns a single story by id. If that story does not exist, it returns null"
+    story(storyId: ID!): Story
+}
+
+
