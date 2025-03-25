@@ -44,8 +44,8 @@
     * Primarily, you use `path(String)` to select which fields to verify from the result using a JSON path expression. The paths start with the `data` node of the response (exclusive).
     * Example response:
     * ```json
-  { "data": { "story": { "id": "1" } } }
-    ```
+      { "data": { "story": { "id": "1" } } }
+      ```
     * With `path("story.id")`, you can select and verify the ID of the story
     * To verify a value, you need to convert it to a Java type using `entity` and then compare it, e.g.:
         * `path("story.id").entity(String.class).isEqualTo("1");`
