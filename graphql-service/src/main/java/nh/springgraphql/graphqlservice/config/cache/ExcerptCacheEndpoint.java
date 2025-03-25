@@ -19,8 +19,8 @@ import java.util.Map;
  * - However, the built-in endpoint does not show cache CONTENT (for good security reasons!)
  * - Additionally, my implementation only works with the default in-memory cache
  */
-//@Component
-//@Endpoint(id = "excerpt-cache") // Endpoint-id muss in den application.properties enabled werden
+@Component
+@Endpoint(id = "excerpt-cache") // Endpoint-id muss in den application.properties enabled werden
 class ExcerptCacheEndpoint {
 
     /**
