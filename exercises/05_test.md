@@ -15,18 +15,18 @@
 * With a **slice test**, the test runner only starts selected parts of your application
     * Which parts those are depends on the annotation used, e.g., all repositories or all controllers
     * If there are beans that are not started, you will need to mock them or explicitly list them to be started
-    * To write a "GraphQL slice" test, annotate your test class with `@GraphQlTest`. This will start all GraphQL-related "infrastructure" beans and all `@Controller` beans
-        * You can limit the selection of `@Controller` beans by passing the class names to `@GraphQlTest`
-        * This can be useful so that you don’t have to mock or add too many beans that your controllers need. It also makes the startup faster.
-        * ```java
-      // Start only the QueryController + all Spring-GraphQL beans
-      @GraphQlTest(controllers = QueryController.class)
-      // Also start the StoryRepository
-      @Import(StoryRepository.class)
-      class QueryControllerTest {
-      // ...
-      }
-      ```
+      * To write a "GraphQL slice" test, annotate your test class with `@GraphQlTest`. This will start all GraphQL-related "infrastructure" beans and all `@Controller` beans
+          * You can limit the selection of `@Controller` beans by passing the class names to `@GraphQlTest`
+          * This can be useful so that you don’t have to mock or add too many beans that your controllers need. It also makes the startup faster.
+          * ```java
+            // Start only the QueryController + all Spring-GraphQL beans
+            @GraphQlTest(controllers = QueryController.class)
+            // Also start the StoryRepository
+            @Import(StoryRepository.class)
+            class QueryControllerTest {
+            // ...
+            }
+            ```
 * If you want to start the entire application, you can use the `@SpringBootTest` annotation
     * This will create and start the entire application context
     * By default, no web server is started, and communication between the test and the application happens through a mocked layer by Spring. If you want to start the application fully with a web server, you need to use `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`
