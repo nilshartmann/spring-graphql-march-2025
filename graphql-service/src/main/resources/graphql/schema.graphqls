@@ -14,6 +14,20 @@ type Comment {
     rating: Int!
 }
 
+enum ContactType { phone, email }
+
+type Contact {
+    type: ContactType!
+    value: String!
+}
+
+type Publisher  {
+    id: ID!
+    name: String!
+    contact: Contact!
+}
+
+
 """
 A `Story` domain object most **important** object in our application.
 
@@ -34,6 +48,13 @@ type Story {
     - The list might be empty
     """
     comments: [Comment!]!
+
+    """
+    The publisher can be null:
+    (- if it is removed from the remote service)
+    - if the remote call could not be executed
+    """
+    publisher: Publisher
 }
 
 # Root Type
