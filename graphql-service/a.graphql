@@ -1,5 +1,6 @@
-query {
-    story(storyId: 1) {
+query { stories {
+    id title
+    comments {
         id
     }
-}
+}}
