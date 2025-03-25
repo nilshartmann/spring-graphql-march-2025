@@ -3,6 +3,7 @@ package nh.springgraphql.graphqlservice.graphql;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.schema.DataFetchingEnvironment;
+import jakarta.annotation.security.RolesAllowed;
 import nh.springgraphql.graphqlservice.domain.Comment;
 import nh.springgraphql.graphqlservice.domain.ResourceNotFoundException;
 import nh.springgraphql.graphqlservice.domain.StoryRepository;
@@ -10,6 +11,8 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.GraphQlExceptionHandler;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Controller
 public class MutationController {
@@ -65,6 +68,7 @@ public class MutationController {
     record AddCommentError(String errorMsg) implements AddCommentPayload {
     }
 
+    @RolesAllowed("USER")
     @MutationMapping
     AddCommentPayload addComment(@Argument CreateCommentInput input) {
         try {

@@ -1,3 +1,6 @@
+# see GraphQlConfig.maxQueryComplexityInstrumentation
+directive @complexity(complexity: Int! = 1) on FIELD_DEFINITION
+
 enum PublicationState {
     draft,
     in_review,
@@ -12,6 +15,7 @@ type Comment {
     text: String!
 
     rating: Int!
+    story: Story!
 }
 
 enum ContactType { phone, email }
@@ -47,7 +51,7 @@ type Story {
     - The list only contains comment objects, but no null values
     - The list might be empty
     """
-    comments: [Comment!]!
+    comments: [Comment!]! @complexity(complexity: 2)
 #    commentsWithPagination(first: Int!): CommentList!
 
     """
@@ -55,7 +59,7 @@ type Story {
     (- if it is removed from the remote service)
     - if the remote call could not be executed
     """
-    publisher: Publisher
+    publisher: Publisher  @complexity(complexity: 5)
 
 #    likes: Int!
 }

@@ -8,6 +8,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -30,12 +32,14 @@ public class QueryController {
     // Handler Functions
     //  DATA FETCHERS
     @QueryMapping
+//    @PostFilter()
     List<Story> stories() {
         return storyRepository.findAllStories();
     }
 
     //    @SchemaMapping(typeName = "Query")
     @QueryMapping
+    @PostAuthorize("returnObject.isEmpty() || !returnObject.get().state().isDraft() || hasRole('ROLE_ADMIN')")
     Optional<Story> story(@Argument String storyId) {
         // 
         return storyRepository.findStory(storyId);
