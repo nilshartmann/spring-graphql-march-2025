@@ -50,6 +50,11 @@ public class StoryRepository {
 
 
     public String generateExcerpt(Story story, int maxLength) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         var b = story.body();
         return b.substring(0, Math.min(maxLength, b.length()-1));
     }
