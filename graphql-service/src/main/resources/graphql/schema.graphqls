@@ -48,6 +48,7 @@ type Story {
     - The list might be empty
     """
     comments: [Comment!]!
+#    commentsWithPagination(first: Int!): CommentList!
 
     """
     The publisher can be null:
@@ -55,7 +56,18 @@ type Story {
     - if the remote call could not be executed
     """
     publisher: Publisher
+
+#    likes: Int!
 }
+
+#type CommentList {
+#    comments: [Comment!]!
+#
+#    pageSize: Int!
+#    hasNextPage: Boolean!
+#    pageNo: Int!
+#}
+
 
 # Root Type
 #   fields: Root Fields
@@ -72,9 +84,36 @@ input CreateCommentInput {
     rating: Int!
 }
 
+input AddCommentInput {
+    storyId: ID!
+    text: String!
+    rating: Int!
+}
+
+#type AddCommentPayload {
+#    comment: Comment
+#    errorMsg: String
+#}
+
+type AddCommentSuccess {
+    comment: Comment!
+}
+
+type ValidationError {
+    validationMessage: String!
+}
+
+type AddCommentError {
+    errorMsg: String!
+}
+
+union AddCommentPayload = AddCommentSuccess | AddCommentError
+
 type Mutation {
 #    createComment(storyId: ID!, text: String!, rating: Int!): Comment!
-    createComment(input: CreateCommentInput!): Comment!
+    createComment(input: CreateCommentInput!): Comment! @deprecated(reason: "Do not use anylonger, use new addComment mutation")
+
+    addComment(input: AddCommentInput!): AddCommentPayload!
 }
 
 

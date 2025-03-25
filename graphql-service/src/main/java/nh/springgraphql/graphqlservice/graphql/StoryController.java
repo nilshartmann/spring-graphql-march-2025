@@ -37,7 +37,7 @@ public class StoryController {
     }
 
     @SchemaMapping
-    Object publisher(Story story, DataFetchingEnvironment env) {
+    Optional<Publisher> publisher(Story story, DataFetchingEnvironment env) {
         String publisherId = story.publisherId();
         var result = publisherServiceClient.fetchPublisher(publisherId); // ⚠️ ⚠️ ⚠️ ⚠️ ⚠️ ⚠️
         if (result.isEmpty()) {
@@ -51,19 +51,19 @@ public class StoryController {
         boolean hasContactFieldSelected = selectionSet.contains("contact/**");
 
         if (!hasContactFieldSelected) {
-            return new Publisher(
+            return Optional.of(new Publisher(
                 publisherMap.get("id"),
                 publisherMap.get("name"),
-                null);
+                null));
         }
 
-        return new Publisher(
+        return Optional.of(new Publisher(
             publisherMap.get("id"),
             publisherMap.get("name"),
             new Contact(
                 ContactType.valueOf(publisherMap.get("contact_type")),
                 publisherMap.get("contact_value")
-            ));
+            )));
 
     }
 }
