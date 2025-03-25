@@ -1,13 +1,14 @@
 package nh.springgraphql.graphqlservice.domain;
 
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
-
-import static nh.springgraphql.graphqlservice.config.Utils.sleep;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This simulates some store of stories. To make things simple during the workshop everything we need is
@@ -17,14 +18,16 @@ import static nh.springgraphql.graphqlservice.config.Utils.sleep;
  * Also it would maybe be splitted into multiple parts: Stories, Comments, ExcerptService, ...
  * </p>
  * <p>
- *  This is <b>not threadsafe</b>. While you can access the repository with multiple read requests in parallel,
- *  writing (add new comments) might fail
+ * This is <b>not threadsafe</b>. While you can access the repository with multiple read requests in parallel,
+ * writing (add new comments) might fail
  * </p>
  */
 @Component
 public class StoryRepository {
 
     private final List<Story> stories;
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     public StoryRepository() {
         this.stories = generateStories();
@@ -51,7 +54,7 @@ public class StoryRepository {
 
     public String generateExcerpt(Story story, int maxLength) {
         var b = story.body();
-        return b.substring(0, Math.min(maxLength, b.length()-1));
+        return b.substring(0, Math.min(maxLength, b.length() - 1));
     }
 
     public Optional<Comment> findComment(String id) {
@@ -59,6 +62,7 @@ public class StoryRepository {
             .flatMap(s -> s.comments().stream().filter(c -> c.id().equals(id)))
             .findAny();
     }
+
     public List<Comment> findCommentsForStory(String storyId) {
         var story = findStory(storyId).orElseThrow(
             () -> new ResourceNotFoundException("Story '%s' not found".formatted(storyId))
@@ -80,6 +84,10 @@ public class StoryRepository {
 
         story.comments().add(newComment);
 
+        publisher.publishEvent(
+            new CommentCreatedEvent(newComment)
+        );
+
         return newComment;
     }
 
@@ -88,23 +96,23 @@ public class StoryRepository {
         return "" + this.stories.stream().mapToInt(s -> s.comments().size()).sum();
     }
 
-    public static void main(String[] args) {
-        StoryRepository repo = new StoryRepository();
-        var stories = repo.stories;
-
-        // Print each story and its comments
-        for (Story story : stories) {
-            System.out.println("Story: " + story);
-            System.out.println("Comments: " + repo.findCommentsForStory(story.id()));
-            System.out.println();
-        }
-
-        // Example: Add a comment to a story in a thread-safe manner
-//        repo.addComment("1", new Comment("13", "Looking forward to more updates!", 4));
-
-        // Print updated comments for Story 1
-//        System.out.println("Updated Comments for Story 1: " + repo.getComments("1"));
-    }
+//    public static void main(String[] args) {
+//        StoryRepository repo = new StoryRepository();
+//        var stories = repo.stories;
+//
+//        // Print each story and its comments
+//        for (Story story : stories) {
+//            System.out.println("Story: " + story);
+//            System.out.println("Comments: " + repo.findCommentsForStory(story.id()));
+//            System.out.println();
+//        }
+//
+//        // Example: Add a comment to a story in a thread-safe manner
+////        repo.addComment("1", new Comment("13", "Looking forward to more updates!", 4));
+//
+//        // Print updated comments for Story 1
+    ////        System.out.println("Updated Comments for Story 1: " + repo.getComments("1"));
+//    }
 
     private static List<Story> generateStories() {
         return List.of(

@@ -57,3 +57,10 @@ type Mutation {
 }
 
 
+type CommentCreatedEvent {
+    newComment:Comment!
+}
+
+type Subscription {
+    onNewComment(storyId: ID!): CommentCreatedEvent
+}
